@@ -3,11 +3,12 @@
 % It also overlay the bbox in the video for vizualization
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Load csv files and dilate bboxes too account for error
+%% Load csv files and dilate bboxes to account for error
 close all
 clear all
 clc
-addpath('Vid0')                     % path of folder of video 0
+% path of folder of video 0 which contains all the csv files for that video
+addpath('Vid0')                    
 
 frame = ind_import('frame_90_5fps.csv');
 frame = dilate(frame,25);

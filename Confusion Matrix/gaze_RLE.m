@@ -36,7 +36,7 @@ function gaze_results_filtered = gaze_RLE(array, duration)
     gaze_results_filtered(:,4) = [];
 end
 
-% Local function
+% Local functions below
 function varargout = SplitVec(v, fun, varargin)
 % [out1, out2, ...] = SplitVec(V, FUN, type1, type2, ...)
 % [out1, out2, ...] = SplitVec(V, COL, type1, type2, ...)
