@@ -1,6 +1,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This script uses the csv bboxes and finds the RLE for analysis.
 % It also overlay the bbox in the video for vizualization
+% 
+% Functions required: 1) gaze_RLE.m 
+%                     2) ind_import.m
+%                     3) dilate.m
+%                     4) clean_gaze_position.m
+%
+% Files required: - a video
+%                 - CSV bboxes of the faces/objects from video
+%                 - the gaze position from video
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Load csv files and dilate bboxes to account for error
@@ -69,7 +78,7 @@ end
 %  close(w)   
 
 %% Check if gaze is in bbox
-for i=1:size(new_confidence,2)-1
+for i=1:size(frame_sample,1)
     ref=i;
     if new_confidence(i) >= 0.75            % filter out anything less than 75% confidence
         frame_check(i)=(pos_x(i)>=frame_sample(ref,1) && pos_x(i)<=frame_sample(ref,1)+frame_sample(ref,3)) && (pos_y(i)>=frame_sample(ref,2) && pos_y(i)<=frame_sample(ref,2)+frame_sample(ref,4));
@@ -84,7 +93,7 @@ frame_gaze = gaze_RLE(frame_check, look_duration);
 shark_gaze = gaze_RLE(shark_check, look_duration);
 top_gaze = gaze_RLE(top_check, look_duration);
 
-% save('gaze_result.mat','frame_gaze_filtered','shark_gaze_filtered','top_gaze_filtered');
+% save('gaze_result.mat','frame_gaze','shark_gaze','top_gaze');
             
 
 

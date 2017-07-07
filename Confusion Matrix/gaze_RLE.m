@@ -30,8 +30,6 @@ function gaze_results_filtered = gaze_RLE(array, duration)
     
     % shift so now it's [first last length logic]
     gaze_results_filtered = circshift(gaze_results_filtered,-2,2);
-    
-    gaze_results_filtered(:,3) = gaze_results_filtered(:,2)-gaze_results_filtered(:,1)+1;
     % delete the logic column
     gaze_results_filtered(:,4) = [];
 end
