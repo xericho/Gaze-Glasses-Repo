@@ -4,7 +4,7 @@ function gaze_results_filtered = gaze_RLE(array, duration)
     logic = double(logic');
     compare = [length logic first last];
     
-    % filter out anything less than the look duratoin
+    % filter out anything less than the look duration
     index = 1;
     for i=1:size(compare,1)
         if compare(i,1) >= duration
@@ -16,9 +16,9 @@ function gaze_results_filtered = gaze_RLE(array, duration)
     start = min(find(gaze_results(:,2)==1));    % start where there is a look
     index = 1;
     for i = start:size(gaze_results,1)
-        if i==1 && gaze_results(1,2) == 1       % initialize 1
+        if i==1 && gaze_results(1,2) == 1       % initialize 1, can't go before 1st frame
             gaze_results_filtered(index,:)=gaze_results(i,:);
-            index=index+1;
+%             index=index+1;
         elseif gaze_results(i,2)==1 && gaze_results(i-1,2)==0  % from 0 to 1
             gaze_results_filtered(index,:)=gaze_results(i,:);
         elseif gaze_results(i,2)==1 && gaze_results(i-1,2)==1  % from 1 to 1
@@ -30,8 +30,11 @@ function gaze_results_filtered = gaze_RLE(array, duration)
     
     % shift so now it's [first last length logic]
     gaze_results_filtered = circshift(gaze_results_filtered,-2,2);
+    % update length
+    gaze_results_filtered(:,3)=gaze_results_filtered(:,2)-gaze_results_filtered(:,1)+1;
     % delete the logic column
     gaze_results_filtered(:,4) = [];
+    
 end
 
 % Local functions below
