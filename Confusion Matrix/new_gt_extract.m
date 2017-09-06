@@ -11,9 +11,12 @@
 %                 - the gaze position from video
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load files
-addpath('Vid002');
+clear all
+
+foldername = 'vid004';
+addpath(foldername);
 % load csv bboxes for gt
-gt = csvimport('vid002_gt_bbox.csv');
+gt = csvimport(sprintf('%s_gt_bbox.csv',foldername));
 
 % extract bboxes
 face1_gt = cell2matrix(gt(2:end,1:4));
@@ -23,13 +26,14 @@ top_gt   = cell2matrix(gt(2:end,13:16));
 shark_gt = cell2matrix(gt(2:end,17:20));
 frame_gt = cell2matrix(gt(2:end,21:24));
 
-save('vid002_gt_bbox.mat','face2_gt','face3_gt','face1_gt','top_gt','shark_gt','frame_gt');
+name = sprintf('%s_gt_bbox.mat',foldername);
+% save(name,'face1_gt','face2_gt','face3_gt','top_gt','shark_gt','frame_gt');
 
 %% Load video and gaze position
-reader = VideoReader('vid002-60fps.mp4');
+reader = VideoReader(sprintf('%s-60fps.mp4',foldername));
 vid_frame_count = reader.NumberOfFrames;
 
-[new_confidence,pos_x,pos_y] = clean_gaze_position('vid002_gaze_positions.csv', reader);
+[new_confidence,pos_x,pos_y] = clean_gaze_position(sprintf('%s_gaze_positions.csv',foldername), reader);
 
 %% Check if gaze is in the bbox for ground truth
 if size(frame_gt,1) > size(new_confidence,2)
@@ -38,7 +42,7 @@ else
     max_length = size(frame_gt,1); 
 end
 
-conf = .75;
+conf = .25;
 for i=1:max_length
     ref=i;
     if new_confidence(i) >= conf            % filter out anything less than 70% confidence
@@ -59,7 +63,7 @@ end
 
 %% Convert to gaze using RLE
 look_duration = 6;                              % let a look be at least 6 frames
-for look_duration = 3:20
+% for look_duration = 3:20
     frame_gt_gaze = gaze_RLE(frame_gt_binary, look_duration);
     shark_gt_gaze = gaze_RLE(shark_gt_binary, look_duration);
     top_gt_gaze   = gaze_RLE(top_gt_binary, look_duration);
@@ -67,6 +71,6 @@ for look_duration = 3:20
     face2_gt_gaze = gaze_RLE(face2_gt_binary, look_duration);
     face3_gt_gaze = gaze_RLE(face3_gt_binary, look_duration);
 
-    name = sprintf('vid002_gt_gaze_%2.0f-%d.mat',conf*100,look_duration);
+    name = sprintf('%s_gt_gaze_%2.0f-%d.mat',foldername,conf*100,look_duration);
     save(name,'frame_gt_gaze','shark_gt_gaze','top_gt_gaze','face1_gt_gaze','face2_gt_gaze','face3_gt_gaze');
-end
+% end
