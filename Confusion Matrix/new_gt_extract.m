@@ -29,6 +29,10 @@ frame_gt = cell2matrix(gt(2:end,21:24));
 name = sprintf('%s_gt_bbox.mat',foldername);
 % save(name,'face1_gt','face2_gt','face3_gt','top_gt','shark_gt','frame_gt');
 
+%% Saving Leanne's gt (after you input manually)
+save('vid003_leanne_gt_gaze','face1_leanne_gt_gaze','face2_leanne_gt_gaze',...
+     'face3_leanne_gt_gaze','frame_leanne_gt_gaze','top_leanne_gt_gaze',...
+     'shark_leanne_gt_gaze');
 %% Load video and gaze position
 reader = VideoReader(sprintf('%s-60fps.mp4',foldername));
 vid_frame_count = reader.NumberOfFrames;

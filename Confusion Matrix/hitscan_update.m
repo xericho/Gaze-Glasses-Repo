@@ -15,10 +15,11 @@
 %% Load csv files and dilate bboxes to account for error
 % close all
 clear all
+restoredefaultpath
 % clc
 
 % path of folder which contains all the files for that video
-foldername = 'vid004';
+foldername = 'vid003';
 addpath(foldername)
 
 % frame_import = csvimport('vid002_frame_90_all_frames.csv');

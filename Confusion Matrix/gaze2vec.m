@@ -1,4 +1,4 @@
-function [gt_vec, test_vec, overlap, union] = gaze2vec(gt, test)
+function [gt_vec, test_vec, overlap, union] = gaze2vec(gt, test, length)
     % Convert gaze to an array of 1s and 0s
     max_size = max(max(gt(:),max(test(:))));
     gt_vec = zeros(max_size,1);
@@ -25,18 +25,37 @@ function [gt_vec, test_vec, overlap, union] = gaze2vec(gt, test)
     
     % Plot gaze
     figure
+    % Resize figure
+    set(gcf, 'Position', [0 200 1000 190])      % [x y width height]  
+    
     for i = 1:size(gt,1)
-        rectangle('Position',[gt(i,1) 3 (gt(i,2)-gt(i,1)) 1], 'FaceColor',[0.75 1 1 ],'EdgeColor','b','LineWidth',2) 
+        rectangle('Position',[gt(i,1) 1 (gt(i,2)-gt(i,1)) .5], 'FaceColor','g','EdgeColor','k','LineWidth',1) 
     end
     for i = 1:size(test,1)
-        rectangle('Position',[test(i,1) 2 (test(i,2)-test(i,1)) 1], 'FaceColor',[0.75 1 1 ],'EdgeColor','b','LineWidth',2) 
+        rectangle('Position',[test(i,1) .5 (test(i,2)-test(i,1)) .5], 'FaceColor','b','EdgeColor','k','LineWidth',1) 
     end
     [first last logic] = SplitVec(overlap,[],'first','last','firstelem');
     for i=1:size(logic,1)
         if logic(i)==1
-            rectangle('Position',[first(i) 1 last(i)-first(i) 1],'FaceColor',[0.25 1 1],'EdgeColor','b','LineWidth',2)
+            rectangle('Position',[first(i) 0 last(i)-first(i) .5],'FaceColor','r','EdgeColor','k','LineWidth',1)
         end
     end
-    ylabel('overlap                   test                       GT');
+    % Create 3 rows of text
+    y = ylabel({'  GT';' ';'Algorithm';' ';'Overlap'});
+    % Rotate ylabel so it's horizontal
+    set(get(gca,'ylabel'),'rotation',0)
+    % Reposition ylabel so it can be read easily
+    set(y, 'Units', 'Normalized', 'Position', [-0.05, 0.1, .5]);    % [x y text size]
     xlabel('Frame number');
+    xlim([0 length]);
+    % Get rid of y axis 
+    set(gca,'YTickLabel',[]);       
+    
+    
+    % Plot legend without relations to graph
+%     h = zeros(3, 1);                % dummy variable
+%     h(1) = plot(NaN,NaN,'og');
+%     h(2) = plot(NaN,NaN,'ob');
+%     h(3) = plot(NaN,NaN,'or');
+%     legend(h, 'Ground truth','Algorithm','Overlap');
 end

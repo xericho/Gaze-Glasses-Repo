@@ -1,8 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Cleans the gaze position data so it is synced with the 
-% video.
+% Cleans the gaze position data so it is synced with the video.
 %
-% Example: [confidence, pos_x, pos_y] = clean_gaze_position('gaze_postions.csv', 30);
+% Example: [confidence, pos_x, pos_y] = clean_gaze_position('gaze_postions.csv', reader);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [new_confidence, new_pos_x, new_pos_y] = clean_gaze_position(filename, video)
@@ -17,7 +16,7 @@ function [new_confidence, new_pos_x, new_pos_y] = clean_gaze_position(filename, 
     frame_num = 0;
     
     while frame_num < index(end)
-        temp = find(index == frame_num);                            % find the index of frame number
+        temp = find(index == frame_num);        % find the index of frame number
         
         % no such frame number exists
         if isempty(temp)
