@@ -19,7 +19,7 @@ restoredefaultpath
 % clc
 
 % path of folder which contains all the files for that video
-foldername = 'vid000';
+foldername = 'vid004';
 addpath(foldername)
 
 % frame_import = csvimport('vid002_frame_90_all_frames.csv');
@@ -40,18 +40,30 @@ top_name = sprintf('%s_top_90.csv',foldername);
 top = ind_import(top_name);
 % top = dilate(top,10);
 
-load('face1.mat');
+load(sprintf('%s_face1.mat',foldername));
 face1 = squeeze(face1_identified)';
 face1 = face_expand(face1);
-load('face2.mat');
-face2 = squeeze(face2_identified)'; %comment for vid003
+load(sprintf('%s_face2.mat',foldername));
+face2 = squeeze(face2_identified)';
 face2 = face_expand(face2);
-load('face3.mat');
+load(sprintf('%s_face3.mat',foldername));
 face3 = squeeze(face3_identified)';
 face3 = face_expand(face3);
 
+% pad with 0s
+if(strcmp(foldername,'vid002'))
+    face1 = [face1; zeros(size(face2,1)-size(face1,1),4)]; 
+end
+if(strcmp(foldername,'vid003'))
+    face2 = [face2; zeros(size(face1,1)-size(face2,1),4)];
+end
+if(strcmp(foldername,'vid004'))
+    face2 = [face2; zeros(size(face1,1)-size(face2,1),4)];
+    face3 = [face3; zeros(size(face1,1)-size(face3,1),4)];
+end
+
 %% Load video and gaze position
-reader = VideoReader(sprintf('%s-60fps.mp4',foldername));
+reader = VideoReader(sprintf('%s_raw_60fps.mp4',foldername));
 vid_frame_count = reader.NumberOfFrames;
 
 [new_confidence,pos_x,pos_y] = clean_gaze_position(sprintf('%s_gaze_positions.csv',foldername), reader);

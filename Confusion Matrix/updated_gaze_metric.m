@@ -13,9 +13,9 @@ restoredefaultpath
 % Student gt vs alg?
 student_gt = true;  
 % Leanne gt vs alg?
-leanne_gt = true;
+leanne_gt = false;
 % Compare student gt and Leanne gt?
-compare_gts = true;     % can only run if prev variables are true
+compare_gts = false;     % can only run if prev variables are true
 
 foldername = 'vid000';
 look_duration = 6;
@@ -72,8 +72,6 @@ if(student_gt)
     vid_gt = [frame_gt_binary; top_gt_binary; shark_gt_binary; face1_gt_binary; face2_gt_binary; face3_gt_binary;];
     vid_fp = sum(vid_test & ~vid_gt)/sum(vid_test);
     vid_fn = sum(vid_gt & ~vid_test)/sum(vid_gt);
-
-    FINAL = [final_face1; final_face2; final_face3; final_frame; final_shark; final_top; vid_acc vid_fp vid_fn sum(vid_overlap) sum(vid_union)];
 end
 
 %% Leanne gt vs alg
@@ -129,6 +127,98 @@ end
 name = sprintf('%s_results',foldername); 
 % save(name,'final_frame','final_shark','final_top','final_face1','final_face2','final_face3');
 
+%% Calculating the avg IOU and std dev
+if(student_gt)
+    % Load GT bboxes
+    load(sprintf('%s_gt_bbox.mat',foldername));
+
+    % Load test bboxes
+    frame_name = sprintf('%s_frame_90.csv',foldername);
+    frame = ind_import(frame_name);       
+    % frame = dilate(frame,1);                      
+    shark_name = sprintf('%s_shark_50.csv',foldername);
+    shark = ind_import(shark_name);
+    % shark = dilate(shark,25);
+    top_name = sprintf('%s_top_90.csv',foldername);
+    top = ind_import(top_name);
+    % top = dilate(top,10);
+
+    load(sprintf('%s_face1.mat',foldername));
+    face1 = squeeze(face1_identified)';
+    face1 = face_expand(face1);
+    load(sprintf('%s_face2.mat',foldername));
+    face2 = squeeze(face2_identified)';
+    face12 = face_expand(face2);
+    load(sprintf('%s_face3.mat',foldername));
+    face3 = squeeze(face3_identified)';
+    face3 = face_expand(face3);
+
+    % pad with 0s
+    if(strcmp(foldername,'vid002'))
+        face1 = [face1; zeros(size(face2,1)-size(face1,1),4)]; 
+    end
+    if(strcmp(foldername,'vid003'))
+        face2 = [face2; zeros(size(face1,1)-size(face2,1),4)];
+    end
+    if(strcmp(foldername,'vid004'))
+        face2 = [face2; zeros(size(face1,1)-size(face2,1),4)];
+        face3 = [face3; zeros(size(face1,1)-size(face3,1),4)];
+    end
+
+    % Expand csv bboxes to have a bbox for every frame
+    % The csv bboxes are currently sampled every 5 frames
+
+    % initialize
+    frame_sample = zeros(size(frame,1), 4);
+    shark_sample = zeros(size(shark,1), 4);
+    top_sample   = zeros(size(top,1), 4);
+
+    for i=1:size(frame,1)*5
+        ref = 1+floor((i-1)/5);
+        frame_sample(i,:) = frame(ref,:);
+        shark_sample(i,:) = shark(ref,:);
+        top_sample(i,:) = top(ref,:);
+    end
+
+    stop = min(size(face1,1),size(shark_sample,1));
+    frame_iou = nan(stop,1);
+    shark_iou = nan(stop,1);
+    top_iou   = nan(stop,1);
+    face1_iou = nan(stop,1);
+    face2_iou = nan(stop,1);
+    face3_iou = nan(stop,1);
+
+    for i = 1:stop
+        if ~isnan(frame_sample(i,1)) && ~isnan(frame_gt(i,1))
+            frame_iou(i)=bboxOverlapRatio(frame_gt(i,:),frame_sample(i,:));
+        end
+        if ~isnan(shark_sample(i,1)) && ~isnan(shark_gt(i,1))
+            shark_iou(i)=bboxOverlapRatio(shark_gt(i,:),shark_sample(i,:));
+        end
+        if ~isnan(top_sample(i,1)) && ~isnan(top_gt(i,1))
+            top_iou(i)=bboxOverlapRatio(top_gt(i,:),top_sample(i,:));
+        end
+        if ~isnan(face1_gt(i,1)) && face1(i,1)~=0
+            face1_iou(i)=bboxOverlapRatio(face1_gt(i,:),face1(i,:));
+        end
+        if ~isnan(face2_gt(i,1)) && face2(i,1)~=0
+            face2_iou(i)=bboxOverlapRatio(face2_gt(i,:),face2(i,:));
+        end
+        if ~isnan(face3_gt(i,1)) && face3(i,1)~=0
+            face3_iou(i)=bboxOverlapRatio(face3_gt(i,:),face3(i,:));
+        end
+
+    end
+    
+    total_avg = nanmean([face1_iou;face2_iou;face3_iou;frame_iou;shark_iou;top_iou]);
+    total_stddev = nanstd([face1_iou;face2_iou;face3_iou;frame_iou;shark_iou;top_iou]);
+%     misses = [sum(face1_iou==0); sum(face2_iou==0); sum(face3_iou==0); sum(frame_iou==0); sum(shark_iou==0); sum(top_iou==0)];
+
+    FINAL = [final_face1 nanmean(face1_iou) nanstd(face1_iou); final_face2 nanmean(face2_iou) nanstd(face2_iou); final_face3 nanmean(face3_iou) nanstd(face3_iou);...
+             final_frame nanmean(frame_iou) nanstd(frame_iou); final_shark nanmean(shark_iou) nanstd(shark_iou); final_top nanmean(top_iou) nanstd(top_iou);...
+             vid_acc vid_fp vid_fn sum(vid_overlap) sum(vid_union) total_avg total_stddev];
+
+end
 %% Graphing student gt vs. Leanne gt
 if(compare_gts)
     GT_graph(face1_gt_gaze, face1_leanne_gt_gaze, vid_length); title('Face 1');
