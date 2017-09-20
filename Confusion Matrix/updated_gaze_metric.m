@@ -15,7 +15,7 @@ student_gt = true;
 % Leanne gt vs alg?
 leanne_gt = true;
 % Compare student gt and Leanne gt?
-compare_gts = true;
+compare_gts = true;     % can only run if prev variables are true
 
 foldername = 'vid000';
 look_duration = 6;
@@ -56,12 +56,12 @@ if(student_gt)
     [face3_accuracy, face3_fp, face3_fn] = gaze_metric_3(face3_overlap, face3_union, face3_test_binary, face3_gt_binary);
 
     % Group results
-    final_frame = [frame_accuracy, frame_fp, frame_fn];
-    final_shark = [shark_accuracy, shark_fp, shark_fn];
-    final_top = [top_accuracy, top_fp, top_fn];
-    final_face1 = [face1_accuracy, face1_fp, face1_fn];
-    final_face2 = [face2_accuracy, face2_fp, face2_fn];
-    final_face3 = [face3_accuracy, face3_fp, face3_fn];
+    final_frame = [frame_accuracy, frame_fp, frame_fn, sum(frame_overlap), sum(frame_union)];
+    final_shark = [shark_accuracy, shark_fp, shark_fn, sum(shark_overlap), sum(shark_union)];
+    final_top = [top_accuracy, top_fp, top_fn, sum(top_overlap), sum(top_union)];
+    final_face1 = [face1_accuracy, face1_fp, face1_fn, sum(face1_overlap), sum(face1_union)];
+    final_face2 = [face2_accuracy, face2_fp, face2_fn, sum(face2_overlap), sum(face2_union)];
+    final_face3 = [face3_accuracy, face3_fp, face3_fn, sum(face3_overlap), sum(face3_union)];
     
     % Calc total vid results
     vid_overlap = [frame_overlap; top_overlap; shark_overlap; face1_overlap; face2_overlap; face3_overlap];
@@ -73,7 +73,7 @@ if(student_gt)
     vid_fp = sum(vid_test & ~vid_gt)/sum(vid_test);
     vid_fn = sum(vid_gt & ~vid_test)/sum(vid_gt);
 
-    FINAL = [final_face1; final_face2; final_face3; final_frame; final_shark; final_top; vid_acc vid_fp vid_fn];
+    FINAL = [final_face1; final_face2; final_face3; final_frame; final_shark; final_top; vid_acc vid_fp vid_fn sum(vid_overlap) sum(vid_union)];
 end
 
 %% Leanne gt vs alg
@@ -105,12 +105,12 @@ if(leanne_gt)
     [face3_accuracy2, face3_fp2, face3_fn2] = gaze_metric_3(face3_overlap2, face3_union2, face3_test_binary2, face3_gt_binary2);
 
     % Group results
-    final_frame2 = [frame_accuracy2, frame_fp2, frame_fn2];
-    final_shark2 = [shark_accuracy2, shark_fp2, shark_fn2];
-    final_top2 = [top_accuracy2, top_fp2, top_fn2];
-    final_face1_2 = [face1_accuracy2, face1_fp2, face1_fn2];
-    final_face2_2 = [face2_accuracy2, face2_fp2, face2_fn2];
-    final_face3_2 = [face3_accuracy2, face3_fp2, face3_fn2];
+    final_frame2 = [frame_accuracy2, frame_fp2, frame_fn2, sum(frame_overlap2), sum(frame_union2)];
+    final_shark2 = [shark_accuracy2, shark_fp2, shark_fn2, sum(shark_overlap2), sum(shark_union2)];
+    final_top2   = [top_accuracy2, top_fp2, top_fn2, sum(top_overlap2), sum(top_union2)];
+    final_face1_2 = [face1_accuracy2, face1_fp2, face1_fn2, sum(face1_overlap2), sum(face1_union2)];
+    final_face2_2 = [face2_accuracy2, face2_fp2, face2_fn2, sum(face2_overlap2), sum(face2_union2)];
+    final_face3_2 = [face3_accuracy2, face3_fp2, face3_fn2, sum(face3_overlap2), sum(face3_union2)];
     
     % Calc total vid results
     vid_overlap2 = [frame_overlap2; top_overlap2; shark_overlap2; face1_overlap2; face2_overlap2; face3_overlap2];
@@ -122,7 +122,7 @@ if(leanne_gt)
     vid_fp2 = sum(vid_test2 & ~vid_gt2)/sum(vid_test2);
     vid_fn2 = sum(vid_gt2 & ~vid_test2)/sum(vid_gt2);
 
-    FINAL2 = [final_face1_2; final_face2_2; final_face3_2; final_frame2; final_shark2; final_top2; vid_acc2 vid_fp2 vid_fn2];
+    FINAL2 = [final_face1_2; final_face2_2; final_face3_2; final_frame2; final_shark2; final_top2; vid_acc2 vid_fp2 vid_fn2 sum(vid_overlap2) sum(vid_union2)];
 end
 
 %% Saving results
