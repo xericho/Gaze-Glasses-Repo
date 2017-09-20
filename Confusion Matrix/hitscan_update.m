@@ -19,22 +19,25 @@ restoredefaultpath
 % clc
 
 % path of folder which contains all the files for that video
-foldername = 'vid003';
+foldername = 'vid000';
 addpath(foldername)
 
 % frame_import = csvimport('vid002_frame_90_all_frames.csv');
 % frame = str2double(frame_import(:,:));
-frame = ind_import('frame_90_5fps.csv');        % load csv file
+frame_name = sprintf('%s_frame_90.csv',foldername);
+frame = ind_import(frame_name);        % load csv file
 % frame = dilate(frame,10);                       % dilate bbox by 25%
 
 % shark_import = csvimport('vid002_shark_50_all_frames.csv');
 % shark = str2double(shark_import(:,2:5));
-shark = ind_import('shark_30_5fps.csv');
+shark_name = sprintf('%s_shark_50.csv',foldername);
+shark = ind_import(shark_name);
 % shark = dilate(shark,25);
 
 % top_import = csvimport('vid002_top_90_all_frames.csv');
 % top = str2double(top_import(:,2:5));
-top = ind_import('top_90_5fps.csv');
+top_name = sprintf('%s_top_90.csv',foldername);
+top = ind_import(top_name);
 % top = dilate(top,10);
 
 load('face1.mat');
