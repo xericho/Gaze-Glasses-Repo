@@ -1,30 +1,60 @@
-function gaze_results_filtered = gaze_RLE(array, duration)
+function gaze_results_filtered = gaze_RLE(array, entry, exit)
     % see SplitVec function below for more info
     [length, first, last, logic] = SplitVec(array,[],'length','first','last','firstelem');
     logic = double(logic');
     compare = [length logic first last];
     
-    % filter out anything less than the look duration
-    index = 1;
-    for i=1:size(compare,1)
-        if compare(i,1) >= duration
-            gaze_results(index,:) = compare(i,:);    
-            index = index+1;
+    % find starting point
+    for start = 1:size(compare,1)
+        if(compare(start,2) == 1 && compare(start,1) >= entry)       % gaze is in bbox
+            flag = 1;                                                % currently looking to exit gaze
+            break;
+        elseif(compare(start,2) == 0 && compare(start,1) >= exit)    % gaze is not in bbox
+            flag = 0;                                                % currently looking to enter 
+            break;
         end
     end
     
-    start = min(find(gaze_results(:,2)==1));    % start where there is a look
-    index = 1;
-    for i = start:size(gaze_results,1)
-        if i==1 && gaze_results(1,2) == 1       % initialize 1, can't go before 1st frame
-            gaze_results_filtered(index,:)=gaze_results(i,:);
-%             index=index+1;
-        elseif gaze_results(i,2)==1 && gaze_results(i-1,2)==0  % from 0 to 1
-            gaze_results_filtered(index,:)=gaze_results(i,:);
-        elseif gaze_results(i,2)==1 && gaze_results(i-1,2)==1  % from 1 to 1
-            gaze_results_filtered(index,4)=gaze_results(i,4);
-        elseif gaze_results(i,2)==0 && gaze_results(i-1,2)==1  % from 1 to 0
-            index = index+1;
+    % reverse bits smaller than entry or exit
+    index = start;
+    while(index <= size(compare,1)-1)
+        % used to switch between entry or exit parameters
+        if(flag == 1)
+            thresh = exit;
+        else
+            thresh = entry;
+        end
+        
+        % check if next is still gaze or not
+        if(compare(index+1,1) <= thresh)                       
+            compare(index+1,2) = double(~compare(index+1,2));       % reverse logic       
+            index = index + 2;
+        else
+            % switch to exit/entry
+            flag = ~flag;
+            index = index + 1;
+        end
+    end
+    
+    % extract the gaze
+    index = start;
+    i = 1;
+    gaze_results_filtered = [];
+    while(index <= size(compare,1))
+        if(compare(index,2) == 0)               % ignore the 0's
+            index = index + 1;
+        else
+            % combine that group of 1s
+            gaze_results_filtered(i,:) = compare(index,:);
+            while(compare(index,2) == 1)
+                gaze_results_filtered(i,4) = compare(index,4);
+                index = index + 1;
+                % check if index is available
+                if(index > size(compare,1))
+                   break; 
+                end
+            end
+            i = i + 1;
         end
     end
     
