@@ -30,11 +30,11 @@ name = sprintf('%s_gt_bbox.mat',foldername);
 % save(name,'face1_gt','face2_gt','face3_gt','top_gt','shark_gt','frame_gt');
 
 %% Saving Leanne's gt (after you input manually)
-save('vid003_leanne_gt_gaze','face1_leanne_gt_gaze','face2_leanne_gt_gaze',...
-     'face3_leanne_gt_gaze','frame_leanne_gt_gaze','top_leanne_gt_gaze',...
-     'shark_leanne_gt_gaze');
+% save('vid000_leanne_gt_gaze','face1_leanne_gt_gaze','face2_leanne_gt_gaze',...
+%      'face3_leanne_gt_gaze','frame_leanne_gt_gaze','top_leanne_gt_gaze',...
+%      'shark_leanne_gt_gaze');
 %% Load video and gaze position
-reader = VideoReader(sprintf('%s-60fps.mp4',foldername));
+reader = VideoReader(sprintf('%s_raw_60fps.mp4',foldername));
 vid_frame_count = reader.NumberOfFrames;
 
 [new_confidence,pos_x,pos_y] = clean_gaze_position(sprintf('%s_gaze_positions.csv',foldername), reader);
@@ -66,15 +66,18 @@ end
 % save(name, 'frame_gt_binary', 'shark_gt_binary', 'top_gt_binary');
 
 %% Convert to gaze using RLE
-look_duration = 6;                              % let a look be at least 6 frames
-% for look_duration = 3:20
-    frame_gt_gaze = gaze_RLE(frame_gt_binary, look_duration);
-    shark_gt_gaze = gaze_RLE(shark_gt_binary, look_duration);
-    top_gt_gaze   = gaze_RLE(top_gt_binary, look_duration);
-    face1_gt_gaze = gaze_RLE(face1_gt_binary, look_duration);
-    face2_gt_gaze = gaze_RLE(face2_gt_binary, look_duration);
-    face3_gt_gaze = gaze_RLE(face3_gt_binary, look_duration);
+entry = 6;                              % let a look be at least 6 frames
+exit = 6;
+for entry = 5:20
+    for exit = 5:20
+        frame_gt_gaze = gaze_RLE(frame_gt_binary, entry, exit);
+        shark_gt_gaze = gaze_RLE(shark_gt_binary, entry, exit);
+        top_gt_gaze   = gaze_RLE(top_gt_binary,   entry, exit);
+        face1_gt_gaze = gaze_RLE(face1_gt_binary, entry, exit);
+        face2_gt_gaze = gaze_RLE(face2_gt_binary, entry, exit);
+        face3_gt_gaze = gaze_RLE(face3_gt_binary, entry, exit);
 
-    name = sprintf('%s_gt_gaze_%2.0f-%d.mat',foldername,conf*100,look_duration);
-    save(name,'frame_gt_gaze','shark_gt_gaze','top_gt_gaze','face1_gt_gaze','face2_gt_gaze','face3_gt_gaze');
-% end
+        name = sprintf('%s_gt_gaze_%d-%d.mat',foldername,entry,exit);
+        save(name,'frame_gt_gaze','shark_gt_gaze','top_gt_gaze','face1_gt_gaze','face2_gt_gaze','face3_gt_gaze');
+    end
+end

@@ -1,3 +1,5 @@
+% Used with 'AVG_results_all_vids.m' script to get the avg for all the vids
+
 function [gt_vec, test_vec, overlap, union] = gaze2vec_ALL(gt, test, gt_vec, test_vec, overlap, union)
     % Convert gaze to an array of 1s and 0s
     max_size = max(max(gt(:),max(test(:))));

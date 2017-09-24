@@ -138,40 +138,22 @@ for i=1:max_length
     end
 end
 
-%% Check if gaze is in bbox (for ALL frames)
-% Sometimes one is bigger than the other so use the smaller one to avoid error
-% if size(frame,1) > size(new_confidence,2)
-%     max_length = size(new_confidence,2);
-% else
-%     max_length = size(frame,1); 
-% end
-% 
-% conf = .25;
-% for i=1:max_length
-%     ref=i;
-%     if new_confidence(i) >= conf            % filter out anything less than confidence
-%         frame_binary(i)=(pos_x(i)>=frame(ref,1) && pos_x(i)<=frame(ref,1)+frame(ref,3)) && (pos_y(i)>=frame(ref,2) && pos_y(i)<=frame(ref,2)+frame(ref,4));
-%         shark_binary(i)=(pos_x(i)>=shark(ref,1) && pos_x(i)<=shark(ref,1)+shark(ref,3)) && (pos_y(i)>=shark(ref,2) && pos_y(i)<=shark(ref,2)+shark(ref,4));
-%         top_binary(i)  =(pos_x(i)>=top(ref,1)   && pos_x(i)<=top(ref,1)+top(ref,3))     && (pos_y(i)>=top(ref,2)   && pos_y(i)<=top(ref,2)+top(ref,4));
-%         face1_binary(i)=(pos_x(i)>=face1(ref,1) && pos_x(i) <= face1(ref,1) + face1(ref,3)) && (pos_y(i)>= face1(ref,2) && pos_y(i) <= face1(ref,2)+face1(ref,4));
-%         face2_binary(i)=(pos_x(i)>=face2(ref,1) && pos_x(i) <= face2(ref,1) + face2(ref,3)) && (pos_y(i)>= face2(ref,2) && pos_y(i) <= face2(ref,2)+face2(ref,4));
-%         face3_binary(i)=(pos_x(i)>=face3(ref,1) && pos_x(i) <= face3(ref,1) + face3(ref,3)) && (pos_y(i)>= face3(ref,2) && pos_y(i) <= face3(ref,2)+face3(ref,4));
-%     end
-% end
-
 %% Gaze RLE
-look_duration = 6;                              % let a look be at least 6 frames
-% for look_duration = 3:20
-    frame_gaze = gaze_RLE(frame_binary, look_duration);
-    shark_gaze = gaze_RLE(shark_binary, look_duration);
-    top_gaze   = gaze_RLE(top_binary, look_duration);
-    face1_gaze = gaze_RLE(face1_binary, look_duration);
-    face2_gaze = gaze_RLE(face2_binary, look_duration);
-    face3_gaze = gaze_RLE(face3_binary, look_duration);
+entry = 6;                              % let a look be at least 6 frames
+exit = 6;
+for entry = 5:20
+    for exit = 5:20
+        frame_gaze = gaze_RLE(frame_binary, entry, exit);
+        shark_gaze = gaze_RLE(shark_binary, entry, exit);
+        top_gaze   = gaze_RLE(top_binary,   entry, exit);
+        face1_gaze = gaze_RLE(face1_binary, entry, exit);
+        face2_gaze = gaze_RLE(face2_binary, entry, exit);
+        face3_gaze = gaze_RLE(face3_binary, entry, exit);
 
-    name = sprintf('%s_test_gaze_%2.0f-%d.mat',foldername,conf*100,look_duration);
-    save(name,'frame_gaze','shark_gaze','top_gaze','face1_gaze','face2_gaze','face3_gaze');
-% end
+        name = sprintf('%s_test_gaze_%d-%d.mat',foldername,entry,exit);
+        save(name,'frame_gaze','shark_gaze','top_gaze','face1_gaze','face2_gaze','face3_gaze');
+    end
+end
 
 
         

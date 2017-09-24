@@ -18,18 +18,20 @@ leanne_gt = false;
 compare_gts = false;     % can only run if prev variables are true
 
 foldername = 'vid000';
-look_duration = 6;
+entry = 6;
+exit = 6;
 
 %% Get total length of video
 addpath(foldername);
+addpath(sprintf('%s/Results',foldername));
 
 reader = VideoReader(sprintf('%s_raw_60fps.mp4',foldername));
 vid_length = reader.NumberOfFrames;
     
 %% Student gt vs. alg
 if(student_gt)
-    gt_name = sprintf('%s_gt_gaze_25-%d.mat', foldername, look_duration);
-    test_name = sprintf('%s_test_gaze_25-%d.mat', foldername, look_duration);
+    gt_name = sprintf('%s_gt_gaze_%d-%d.mat', foldername, entry, exit);
+    test_name = sprintf('%s_test_gaze_%d-%d.mat', foldername, entry, exit);
     load(gt_name);
     load(test_name);
     
@@ -76,7 +78,7 @@ end
 
 %% Leanne gt vs alg
 if(leanne_gt)
-    test_name = sprintf('%s_test_gaze_25-%d.mat', foldername, look_duration);
+    test_name = sprintf('%s_test_gaze_%d-%d.mat', foldername, entry, exit);
     load(test_name);
     load(sprintf('%s_leanne_gt_gaze.mat',foldername));
     
