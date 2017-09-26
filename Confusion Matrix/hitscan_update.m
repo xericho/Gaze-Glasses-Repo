@@ -141,7 +141,7 @@ end
 %% Gaze RLE
 entry = 6;                              % let a look be at least 6 frames
 exit = 6;
-for entry = 5:20
+for entry = 3:20
     for exit = 5:20
         frame_gaze = gaze_RLE(frame_binary, entry, exit);
         shark_gaze = gaze_RLE(shark_binary, entry, exit);

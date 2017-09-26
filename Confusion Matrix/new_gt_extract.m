@@ -12,22 +12,25 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load files
 clear all
-
+restoredefaultpath
 foldername = 'vid004';
 addpath(foldername);
+
 % load csv bboxes for gt
-gt = csvimport(sprintf('%s_gt_bbox.csv',foldername));
+% gt = csvimport(sprintf('%s_gt_bbox.csv',foldername));
 
 % extract bboxes
-face1_gt = cell2matrix(gt(2:end,1:4));
-face2_gt = cell2matrix(gt(2:end,5:8));
-face3_gt = cell2matrix(gt(2:end,9:12));
-top_gt   = cell2matrix(gt(2:end,13:16));
-shark_gt = cell2matrix(gt(2:end,17:20));
-frame_gt = cell2matrix(gt(2:end,21:24));
+% face1_gt = cell2matrix(gt(2:end,1:4));
+% face2_gt = cell2matrix(gt(2:end,5:8));
+% face3_gt = cell2matrix(gt(2:end,9:12));
+% top_gt   = cell2matrix(gt(2:end,13:16));
+% shark_gt = cell2matrix(gt(2:end,17:20));
+% frame_gt = fcell2matrix(gt(2:end,21:24));
 
 name = sprintf('%s_gt_bbox.mat',foldername);
 % save(name,'face1_gt','face2_gt','face3_gt','top_gt','shark_gt','frame_gt');
+
+load(name);
 
 %% Saving Leanne's gt (after you input manually)
 % save('vid000_leanne_gt_gaze','face1_leanne_gt_gaze','face2_leanne_gt_gaze',...
@@ -68,7 +71,7 @@ end
 %% Convert to gaze using RLE
 entry = 6;                              % let a look be at least 6 frames
 exit = 6;
-for entry = 5:20
+for entry = 3:20
     for exit = 5:20
         frame_gt_gaze = gaze_RLE(frame_gt_binary, entry, exit);
         shark_gt_gaze = gaze_RLE(shark_gt_binary, entry, exit);
